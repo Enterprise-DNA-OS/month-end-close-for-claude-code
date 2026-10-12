@@ -1,11 +1,27 @@
 [
   {
-    "name": "example",
-    "title": "TODO(author): the first document this industry must produce",
-    "for_each": "select gen_random_uuid() as id, 'Example' as name",
+    "name": "reconciliation",
+    "title": "Account reconciliation",
+    "for_each": "select r.id, pl.label||' '||a.code||' '||a.name as name from reconciliations r join accounts a on a.id=r.account_id join period_list pl on pl.id=r.period_id order by pl.label, a.code",
     "file": "name",
     "sections": [
-      { "title": "Details", "sql": "select 'replace me' as item, $1::text as record_id" }
+      { "title": "Account", "sql": "select pl.entity, pl.month, a.code, a.name as account, a.risk, pl.currency from reconciliations r join accounts a on a.id=r.account_id join period_list pl on pl.id=r.period_id where r.id=$1" },
+      { "title": "Reconciliation", "note": "Balances are debit minus credit.", "sql": "select rs.ledger_balance, rs.supporting_balance, rs.open_items, rs.unexplained, rs.balance, case when rs.balance_moved then 'yes' else 'no' end as moved_since_prepared from recon_status rs where rs.reconciliation_id=$1" },
+      { "title": "Reconciling items", "sql": "select dated, description, kind, amount, cleared_on from recon_items where reconciliation_id=$1 order by dated" },
+      { "title": "Sign-off", "sql": "select state, prepared_by, prepared_at, reviewed_by, reviewed_at, evidence, reject_reason from reconciliations where id=$1" }
+    ]
+  },
+  {
+    "name": "close-report",
+    "title": "Month-end close report",
+    "for_each": "select id, label as name from period_list order by entity, period_end",
+    "file": "name",
+    "sections": [
+      { "title": "Status", "sql": "select cs.state, cs.business_days_in, cs.target_close, cs.days_to_close, cs.tasks_finished||'/'||cs.tasks as tasks, cs.recs_reviewed||'/'||cs.recs_needed as reconciliations, cs.journals_unposted, cs.flux_unexplained, cs.closed_by from close_status cs join period_list pl on pl.label=cs.period where pl.id=$1" },
+      { "title": "Checklist", "sql": "select name as task, owner, reviewer, state, done_by, signed_off_by from tasks where period_id=$1 order by sort" },
+      { "title": "Reconciliations", "sql": "select code, account, balance, state, unexplained, prepared_by, reviewed_by from recon_status where period_id=$1 order by code" },
+      { "title": "Manual journals", "sql": "select reference, kind, description, state, debits, approved_by, ledger_ref from journal_status where period=(select label from period_list where id=$1) order by reference" },
+      { "title": "Variance commentary", "sql": "select code, account, change, change_pct, coalesce(explanation,'Not explained') as explanation from flux where period=(select label from period_list where id=$1) and (needs_explaining or explanation is not null) order by abs(change) desc" }
     ]
   }
 ]

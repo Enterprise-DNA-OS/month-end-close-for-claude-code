@@ -15,6 +15,9 @@ That layer used to be the whole product, because talking to a database was hard.
 
 - **A visual board.** Stages are a table you ask about, not cards you drag.
 - **A phone app.** It runs where Claude Code runs.
+- **High-volume transaction matching.** BlackLine matches thousands of bank and intercompany lines automatically. Here a reconciliation is a balance against a supporting balance with listed items; line-by-line matching is a customisation.
+- **Attachments stored in the system.** Evidence is a link to where the file lives (your drive or document system), not an upload.
+- **A direct ledger connection.** You bring the trial balance in each month from an export. A live link to your ledger is a customisation.
 - **A vendor help desk.** This is open source. Enterprise DNA supports the installed version for businesses that want someone to call.
 
 ## Who this fits

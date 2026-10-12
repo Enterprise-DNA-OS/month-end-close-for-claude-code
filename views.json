@@ -1,14 +1,22 @@
 [
   {
-    "name": "week",
-    "title": "This week",
-    "subtitle": "Month-End Close for Claude Code: what needs attention, rendered by npm run view",
+    "name": "close",
+    "title": "The close this month",
+    "subtitle": "How far through each open period is, what is late, and who has what",
     "sections": [
-      {
-        "title": "Needs attention",
-        "note": "TODO(author): point this at the industry's attention view (overdue, stuck, quiet).",
-        "sql": "select 'replace me' as item, 'TODO(author)' as why"
-      }
+      { "title": "Close status", "sql": "select period, business_days_in, target_close, tasks_finished||'/'||tasks as tasks, recs_reviewed||'/'||recs_needed as reconciliations, journals_unposted, flux_unexplained from close_status where state='open' order by period" },
+      { "title": "Needs attention", "note": "Late tasks and reconciliations, differences, variances, journals, reversals, auditor requests and rule checks.", "sql": "select kind, period, item, detail from (select 1 as o,'task' as kind,period,task as item,owner||', '||days_late||' business days late' as detail from tasks_due where days_late>0 union all select 2,'reconcile',period,code||' '||account,owner||', '||state from recs_due where days_late>0 or balance_moved union all select 3,'difference',period,code||' '||account,issue from differences union all select 4,'journal',period,reference,state from journal_status where period_state='open' and state not in ('posted','cancelled') union all select 5,'rule',period,record,issue from compliance_gaps) x order by o, period, item" },
+      { "title": "Who has what", "sql": "select owner as person, count(*) filter (where state='todo') as tasks, count(*) filter (where state='done') as awaiting_sign_off from tasks_due group by owner order by owner" },
+      { "title": "Reconciliations not reviewed", "sql": "select period, code, account, risk, owner, reviewer, balance, state, unexplained, due from recs_due order by due, code" }
+    ]
+  },
+  {
+    "name": "flux",
+    "title": "Variance analysis",
+    "subtitle": "Balances against last month, with the explanation or the gap",
+    "sections": [
+      { "title": "Movements over the threshold", "sql": "select f.period, f.code, f.account, f.prior_balance, f.balance, f.change, f.change_pct, coalesce(f.explanation,'Needs explaining') as explanation from flux f join period_list p on p.label=f.period where p.state='open' and (f.needs_explaining or f.explanation is not null) order by f.period, abs(f.change) desc" },
+      { "title": "Close speed", "note": "Business days from month end to close.", "sql": "select entity, month, target_close, days_to_close, state from period_list order by entity, period_end" }
     ]
   }
 ]

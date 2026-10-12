@@ -1,0 +1,9 @@
+Account Code,Account,Account Type,Debit,Credit,YTD Debit,YTD Credit
+1000,BNZ cheque account,Bank,18250.00,,142880.15,
+1100,Accounts receivable,Current Asset,64200.00,51900.00,88415.60,
+2000,Accounts payable,Current Liability,31200.00,38650.00,,47120.40
+2200,GST,Current Liability,4100.00,6230.55,,9874.25
+4000,Freight revenue,Revenue,,92410.00,,388210.00
+5100,Fuel,Direct Costs,21870.30,,90120.80,
+6100,Wages and salaries,Expense,38400.00,,152300.00,
+Total,,,,,,

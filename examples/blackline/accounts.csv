@@ -1,0 +1,5 @@
+Account Number,Account Name,Account Type,Risk Rating,Frequency,Preparer,Reviewer,Due Day
+1000,BNZ cheque account,Asset,High,Monthly,Hemi,Grace,2
+1100,Accounts receivable,Asset,High,Monthly,Hemi,Grace,3
+2000,Accounts payable,Liability,Medium,Monthly,Hemi,Grace,4
+2200,GST,Liability,High,Monthly,Hemi,Grace,3
